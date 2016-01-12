@@ -1,5 +1,6 @@
 $id = 1
 $tortas_quemadas = 0
+$linea = "------------------------------------"
 
 #CLASE CREADA Y FUNCIONANDO
 class Torta
@@ -79,7 +80,7 @@ class Horno < Torta
     @horno_espacio.each do |torta|
       torta_sacar = torta.estado()
       if torta_sacar == "listo"
-        puts "La torta #{torta.id_torta} está lista"
+        puts "La torta #{torta.id_torta} está LISTA!!!"
       end
     end
   end
@@ -87,15 +88,19 @@ class Horno < Torta
   def hornear_torta(id,torta)
     if @horno_espacio.length < 5
       @horno_espacio << torta.dup
-      puts "Torta agregada #{torta.id_torta}"
+      puts $linea
+      puts
+      puts "|||| Torta agregada #{torta.id_torta} ||||"
       true
     else
-      puts "No hay espacio, revise el horno"
+      puts "No hay espacio, revise el horno".upcase
       false
     end
   end
 
   def horno_espacio
+    puts $linea
+    puts
     @horno_espacio.each do |torta|
       puts "#{torta.id_torta} estado: #{torta.estado}"
     end
@@ -125,22 +130,21 @@ class Torteria < Torta
   attr_reader :id_torta
 
   def initialize
-    @linea = "-----------------------------------"
     @tortas_sin_hornear = []
     @horno = Horno.new
     desplegar()
   end
 
   def desplegar
-    puts "\n"*3
-    puts @linea
+    puts "\n"*2
+    puts $linea
     puts "Software torteria, eliga una opción"
-    puts @linea
+    puts $linea
     puts "(1) Tomar Orden"
     puts "(2) Preparar Tortas"
     puts "(3) Revisar Horno"
     puts "(4) Cerrar programa"
-    puts @linea
+    puts $linea
     print "Opcion: "
     opcion = gets.chomp
     @horno.tiempo!()
@@ -159,7 +163,7 @@ class Torteria < Torta
       when 4
         salir()
       else
-        puts "\n\n" + @linea
+        puts "\n\n" + $linea
         puts "SELECCIONE NUMEROS DEL 1 AL 5"
         desplegar()
     end
@@ -167,23 +171,23 @@ class Torteria < Torta
 
   def tomar_orden
     puts
-    puts @linea
+    puts $linea
     puts "Seleccione tipo de torta:"
-    puts @linea
+    puts $linea
     puts "(1) Cubana"
     puts "(2) Clasica"
     puts "(3) Vegetariana"
     puts "(4) Hawaiana"
-    @linea
+    puts $linea
     print "Tipo: "
     tipo = gets.to_i
     if tipo.between?(1, 4)
       @tortas_sin_hornear << Torta.new(tipo)
-      puts @linea
+      puts $linea
       puts
-      puts "Torta agregada #{@tortas_sin_hornear[$id-2].id_torta}"
+      puts "|||| Torta ordenada #{@tortas_sin_hornear[$id-2].id_torta} ||||"
     else
-      puts @linea
+      puts $linea
       puts
       puts "Tipo de torta no encontrado".upcase
       tomar_orden()
@@ -193,15 +197,15 @@ class Torteria < Torta
 
   def preparar_tortas
     puts
-    puts @linea
+    puts $linea
     puts "Tortas sin preparar:"
     @tortas_sin_hornear.each do |torta|
       if torta != "PREPARADA"
         puts "#{torta.id_torta}"
       end
     end
-    puts @linea
-    print "Selecciona numero de torta para preparar: "
+    puts $linea
+    print "Selecciona numero de torta: "
     seleccion = gets.to_i
 
     if (seleccion <= @tortas_sin_hornear.length) && (seleccion != 0)
@@ -218,7 +222,7 @@ class Torteria < Torta
 
   def revisar_horno
     @horno.horno_espacio()
-    puts @linea
+    puts $linea
     print "Selecciona una torta para sacar o 0 para salir: "
     sacar = gets.to_i
     if sacar != 0
@@ -231,7 +235,7 @@ class Torteria < Torta
 
   def salir
     tortas_vendidas = $id - $tortas_quemadas
-    puts "Total de tortas vendidas: "
+    puts "Total de tortas vendidas: #{$id-$tortas_quemadas}"
     puts "Total de tortas quemadas: #{$tortas_quemadas}"
     exit
   end
