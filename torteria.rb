@@ -1,6 +1,8 @@
 $id = 1
 $tortas_quemadas = 0
 $linea = "------------------------------------"
+$mensaje = ""
+$aviso = ""
 
 #CLASE CREADA Y FUNCIONANDO
 class Torta
@@ -80,7 +82,7 @@ class Horno < Torta
     @horno_espacio.each do |torta|
       torta_sacar = torta.estado()
       if torta_sacar == "listo"
-        puts "La torta #{torta.id_torta} está LISTA!!!"
+        $aviso = "HAY UNA TORTA LISTA!!!"
       end
     end
   end
@@ -88,12 +90,10 @@ class Horno < Torta
   def hornear_torta(id,torta)
     if @horno_espacio.length < 5
       @horno_espacio << torta.dup
-      puts $linea
-      puts
-      puts "|||| Torta agregada #{torta.id_torta} ||||"
+      $mensaje = "|||| Torta agregada #{torta.id_torta} ||||"
       true
     else
-      puts "No hay espacio, revise el horno".upcase
+      $mensaje = "No hay espacio, revise el horno".upcase
       false
     end
   end
@@ -136,7 +136,11 @@ class Torteria < Torta
   end
 
   def desplegar
-    puts "\n"*2
+    pantalla_dinamica()
+    puts
+    puts $mensaje
+    $mensaje = ""
+    puts $aviso
     puts $linea
     puts "Software torteria, eliga una opción"
     puts $linea
@@ -164,7 +168,7 @@ class Torteria < Torta
         salir()
       else
         puts "\n"
-        puts "SELECCIONE NUMEROS DEL 1 AL 4"
+        $mensaje = "SELECCIONE NUMEROS DEL 1 AL 4"
         desplegar()
     end
   end
@@ -185,12 +189,12 @@ class Torteria < Torta
       @tortas_sin_hornear << Torta.new(tipo)
       puts $linea
       puts
-      puts "|||| Torta ordenada #{@tortas_sin_hornear[$id-2].id_torta} ||||"
+      $mensaje = "|||| Torta ordenada #{@tortas_sin_hornear[$id-2].id_torta} ||||"
     else
       puts $linea
       puts
-      puts "Tipo de torta no encontrado".upcase
-      tomar_orden()
+      $mensaje = "Tipo de torta no encontrado".upcase
+      desplegar()
     end
     desplegar()
   end
@@ -214,7 +218,7 @@ class Torteria < Torta
         @tortas_sin_hornear[seleccion-1] = "PREPARADA"
       end
     else
-      puts "DATO INCORRECTO, INTENTE DE NUEVO"
+      $mensaje = "DATO INCORRECTO, INTENTE DE NUEVO"
       desplegar()
     end
     desplegar()
@@ -227,10 +231,29 @@ class Torteria < Torta
     sacar = gets.to_i
     if sacar != 0
       @horno.sacar_torta(sacar)
+      $aviso = ""
     else
       desplegar()
     end
     desplegar()
+  end
+
+  def pantalla_dinamica
+    clear_screen!()
+    move_to_home!()
+    reputs()
+  end
+
+  def clear_screen!
+    print "\e[2J"
+  end
+
+  def move_to_home!
+    print "\e[H"
+  end
+
+  def reputs(str = '')
+    puts "\e[0K" + str
   end
 
   def salir
