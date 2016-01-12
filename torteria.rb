@@ -163,8 +163,8 @@ class Torteria < Torta
       when 4
         salir()
       else
-        puts "\n\n" + $linea
-        puts "SELECCIONE NUMEROS DEL 1 AL 5"
+        puts "\n"
+        puts "SELECCIONE NUMEROS DEL 1 AL 4"
         desplegar()
     end
   end
@@ -208,14 +208,14 @@ class Torteria < Torta
     print "Selecciona numero de torta: "
     seleccion = gets.to_i
 
-    if (seleccion <= @tortas_sin_hornear.length) && (seleccion != 0)
+    if (seleccion <= @tortas_sin_hornear.length) && (seleccion != 0) && (@tortas_sin_hornear[seleccion-1] != "PREPARADA")
       check = @horno.hornear_torta(seleccion,@tortas_sin_hornear[seleccion-1])
       if check == true
         @tortas_sin_hornear[seleccion-1] = "PREPARADA"
       end
     else
       puts "DATO INCORRECTO, INTENTE DE NUEVO"
-      preparar_tortas()
+      desplegar()
     end
     desplegar()
   end
