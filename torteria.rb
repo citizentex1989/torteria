@@ -1,11 +1,10 @@
 $id = 1
-$tortas_entregadas = 0
 $tortas_quemadas = 0
 
 #CLASE CREADA Y FUNCIONANDO
 class Torta
-  attr_accessor :tipo
-  attr_reader :id_torta, :tiempo_maximo, :estado, :tiempo_en_horno
+  attr_accessor :tipo, :tiempo_en_horno
+  attr_reader :id_torta, :tiempo_maximo, :estado
 
   def initialize(tipo)
     tortas = ["Cubana","Clasica","Vegetariana","Hawaiana"]
@@ -23,43 +22,36 @@ class Torta
     @estado
   end
 
-  def tiempo_horno
+  def tiempo_maximo
+    @tiempo_maximo
+  end
 
+  def tiempo_en_horno
+    @tiempo_en_horno
+  end
 
-
-
-
-
-
-
-
-
-
-
-
+  def tiempo_en_horno=(value)
+    @tiempo_en_horno = value
   end
 
   def atributos
-    tipos_tortas = {"Cubana" => 20, "Clasica" => 12, "Vegetariana" => 8, "Hawaiana" => 16}
+    tipos_tortas = {"Cubana" => 20, "Clasica" => 12, "Vegetariana" => 12, "Hawaiana" => 16}
     @tiempo_maximo = tipos_tortas[@tipo]
+    @tiempo_en_horno = 0
     @estado = "crudo"
   end
 
   def cambiar_estado(tiempo)
-    puts "Cambiando estado"
     estados = ["crudo","casi listo","listo","quemado"]
     if tiempo <= (@tiempo_maximo*0.25)
-      puts "crudo"
       @estado = estados[0]
     elsif tiempo > (@tiempo_maximo*0.25) && tiempo <= (@tiempo_maximo*0.5)
-      puts "casi listo"
       @estado = estados[1]
     elsif tiempo > (@tiempo_maximo*0.5) && tiempo <= (@tiempo_maximo*0.75)
-      puts "listo"
       @estado = estados[2]
     elsif tiempo > (@tiempo_maximo*0.75)
-      puts "crudo"
       @estado = estados[3]
+      $tortas_quemadas += 1
     end
   end
 
@@ -76,28 +68,26 @@ class Horno < Torta
 
   def tiempo!
     @horno_espacio.each do |torta|
-      torta.cambiar_estado(tiempo)
-
+      tiempo_torta = torta.tiempo_en_horno
+      tiempo_torta += 1
+      torta.tiempo_en_horno=(tiempo_torta)
+      torta.cambiar_estado(tiempo_torta)
     end
+  end
 
-
-
-
-
-
-
-
-
-
-
-
-    
+  def checar_horno
+    @horno_espacio.each do |torta|
+      torta_sacar = torta.estado()
+      if torta_sacar == "listo"
+        puts "La torta #{torta.id_torta} está lista"
+      end
+    end
   end
 
   def hornear_torta(id,torta)
     if @horno_espacio.length < 5
       @horno_espacio << torta.dup
-      puts "Torta agregada"
+      puts "Torta agregada #{torta.id_torta}"
       true
     else
       puts "No hay espacio, revise el horno"
@@ -137,31 +127,25 @@ class Torteria < Torta
   def initialize
     @linea = "-----------------------------------"
     @tortas_sin_hornear = []
-    @tortas_horneadas = []
     @horno = Horno.new
     desplegar()
   end
 
   def desplegar
+    puts "\n"*3
     puts @linea
     puts "Software torteria, eliga una opción"
     puts @linea
     puts "(1) Tomar Orden"
     puts "(2) Preparar Tortas"
     puts "(3) Revisar Horno"
-    puts "(4) Revisar Barra"
-    puts "(5) Cerrar programa"
+    puts "(4) Cerrar programa"
     puts @linea
     print "Opcion: "
     opcion = gets.chomp
-    horno.tiempo!()
-    checar_horno()
-    if checar_horno == true
-      "RECOMENDAMOS CHECAR EL HORNO"
-      proceso(opcion)
-    else
-      proceso(opcion)
-    end
+    @horno.tiempo!()
+    @horno.checar_horno()
+    proceso(opcion)
   end
 
   def proceso(opcion)
@@ -173,11 +157,7 @@ class Torteria < Torta
       when 3
         revisar_horno()
       when 4
-        revisar_barra()
-      when 5
         salir()
-      when 6
-        $tiempo += 2
       else
         puts "\n\n" + @linea
         puts "SELECCIONE NUMEROS DEL 1 AL 5"
@@ -221,7 +201,7 @@ class Torteria < Torta
       end
     end
     puts @linea
-    puts "Selecciona numero de torta para preparar"
+    print "Selecciona numero de torta para preparar: "
     seleccion = gets.to_i
 
     if (seleccion <= @tortas_sin_hornear.length) && (seleccion != 0)
@@ -239,21 +219,27 @@ class Torteria < Torta
   def revisar_horno
     @horno.horno_espacio()
     puts @linea
-    print "Selecciona una torta para sacar: "
+    print "Selecciona una torta para sacar o 0 para salir: "
     sacar = gets.to_i
     if sacar != 0
-      puts "TORTA A SACAR: #{sacar}"
       @horno.sacar_torta(sacar)
+    else
+      desplegar()
     end
     desplegar()
+  end
+
+  def salir
+    tortas_vendidas = $id - $tortas_quemadas
+    puts "Total de tortas vendidas: "
+    puts "Total de tortas quemadas: #{$tortas_quemadas}"
+    exit
   end
 
 end
 
 torteria = Torteria.new
-#torta = Torta.new("Cubana")
-#torta.cambiar_estado(15)
-#puts torta.inspect
+
 
 
 
